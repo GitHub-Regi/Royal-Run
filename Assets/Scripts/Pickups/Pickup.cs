@@ -16,9 +16,14 @@ public abstract class Pickup : MonoBehaviour
         if (other.CompareTag(playerString))
         {
             OnPickup();
-            Destroy(gameObject);
+            Destroy(gameObject, GetDestructionDelay());
         }
     }
 
     protected abstract void OnPickup();
+
+    protected virtual float GetDestructionDelay()
+    {
+        return 0f;
+    }
 }

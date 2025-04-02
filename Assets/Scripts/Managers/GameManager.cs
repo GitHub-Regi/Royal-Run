@@ -1,12 +1,16 @@
+using System.Reflection;
 using TMPro;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    [SerializeField] AudioClip gameOverSFX;
     [SerializeField] PlayerController playerController;
     [SerializeField] TMP_Text timeText;
     [SerializeField] GameObject gameOverText;
     [SerializeField] float startTime;
+
+    AudioSource ads;
 
     bool gameOver;
     float timeLeft;
@@ -16,6 +20,8 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
+        ads = GetComponent<AudioSource>();
+
         gameOver = false;
         timeLeft = startTime;
     }
@@ -46,6 +52,7 @@ public class GameManager : MonoBehaviour
     void PlayerGameOver()
     {
         gameOver = true;
+        ads.PlayOneShot(gameOverSFX, 0.2f);
         playerController.enabled = false;
         gameOverText.SetActive(true);
         Time.timeScale = 0.1f;
