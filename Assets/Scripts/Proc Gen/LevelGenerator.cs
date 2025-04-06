@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using System.ComponentModel;
-using UnityEditor.EditorTools;
 using UnityEngine;
 
 public class LevelGenerator : MonoBehaviour
@@ -15,7 +13,7 @@ public class LevelGenerator : MonoBehaviour
     [Header("Level Settings")]
     [Tooltip("Amount of chunks we start with")]
     [SerializeField] float chunkLength;
-    [SerializeField] float moveSpeed;
+    [SerializeField] public float chunkMoveSpeed;
     [SerializeField] float minMoveSpeed;
     [SerializeField] float maxMoveSpeed;
     [SerializeField] float minGravityZ;
@@ -26,6 +24,7 @@ public class LevelGenerator : MonoBehaviour
     List<GameObject> chunks = new List<GameObject>();
 
     int chunksSpawned = 0;
+
 
     void Start()
     {
@@ -39,18 +38,25 @@ public class LevelGenerator : MonoBehaviour
 
     public void ChangeChunkMoveSpeed(float speedAmount)
     {
-        float newMoveSpeed = moveSpeed + speedAmount;
+        float newMoveSpeed = chunkMoveSpeed + speedAmount;
         newMoveSpeed = Mathf.Clamp(newMoveSpeed, minMoveSpeed, maxMoveSpeed);
 
-        if (newMoveSpeed != moveSpeed)
+        if (newMoveSpeed != chunkMoveSpeed)
         {
-            moveSpeed = newMoveSpeed;
+            chunkMoveSpeed = newMoveSpeed;
 
             float newGravityZ = Physics.gravity.z - speedAmount;
             newGravityZ = Mathf.Clamp(newGravityZ, minGravityZ, maxGravityZ);
             Physics.gravity = new Vector3(Physics.gravity.x, Physics.gravity.y, newGravityZ);
 
             cameraController.ChangeCameraFOV(speedAmount);
+
+            PlayerController player = FindFirstObjectByType<PlayerController>();
+
+            if (player != null)
+            {
+                player.UpdateMoveSpeed(chunkMoveSpeed);
+            }
         }
     }
 
@@ -115,7 +121,7 @@ public class LevelGenerator : MonoBehaviour
         for (int i = 0; i < chunks.Count; i++)
         {
             GameObject chunk = chunks[i];
-            chunk.transform.Translate(-transform.forward * (moveSpeed * Time.deltaTime));
+            chunk.transform.Translate(-transform.forward * (chunkMoveSpeed * Time.deltaTime));
 
             if (chunk.transform.position.z <= Camera.main.transform.position.z - chunkLength)
             {

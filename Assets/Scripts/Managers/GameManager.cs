@@ -1,10 +1,12 @@
 using System.Reflection;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
     [SerializeField] AudioClip gameOverSFX;
+    [SerializeField] AudioSource musicAudioSource;
     [SerializeField] PlayerController playerController;
     [SerializeField] TMP_Text timeText;
     [SerializeField] GameObject gameOverText;
@@ -28,6 +30,17 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
+        if (gameOver)
+        {
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                Time.timeScale = 1f; 
+                SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            }
+
+            return;
+        }
+
         DecreaseTime();
     }
 
@@ -52,6 +65,13 @@ public class GameManager : MonoBehaviour
     void PlayerGameOver()
     {
         gameOver = true;
+
+        if (musicAudioSource != null)
+        {
+            musicAudioSource.Stop();  
+        }
+
+        ads.Stop();
         ads.PlayOneShot(gameOverSFX, 0.2f);
         playerController.enabled = false;
         gameOverText.SetActive(true);
